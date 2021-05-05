@@ -113,6 +113,6 @@ let popupConfirmation = (ted) => {
     ou sur ANNULER pour revenir à la page d'accueil`)) {
       window.location.href = "basket.html"
     } else {
-      window.location.href = "index.html"
+      window.location.href = "../index.html"
     }
 }
