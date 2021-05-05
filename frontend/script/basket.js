@@ -154,3 +154,128 @@ let onloadCartNumbers = () => {
 
 onloadCartNumbers();
 displayCart()
+
+/*/////////////////////////// FORMULAIRE/////////////////////////////////////////////////*/
+//AddEvenListner
+const btnSubmitForm = document.querySelector('#btnSubmit') //selection du buton submit du formulaire
+btnSubmitForm.addEventListener('click', () => {
+    //récupération des valeurs du formulaire dans un objet pour les mettre dans le localStorage
+    const formValues = {
+        firstName : document.querySelector('#firstName').value,
+        lastName: document.querySelector('#lastName').value,
+        address: document.querySelector('#address').value,
+        city: document.querySelector('#city').value,
+        email: document.querySelector('#email').value
+    }
+    //****************** gestion et validation du formulaire******************************
+    //fonction pour apparaitre un message en cas d'une value invalid
+   let invalidFeedBack = (errorId) =>{
+        document.getElementById(`${errorId}`).textContent = `Veuillez bien remplir ce champ SVP` 
+    }
+    //fonction pour changer les borders quand la value de l'input est valid
+    let validFeedBack = (border, errorId) => {
+        border.classList.add('border-success')
+        document.getElementById(`${errorId}`).textContent = ""
+    }
+    // on stocke les regEx des champs Nom, Prénom et ville dans une fonction
+    let regExText = (value) => {
+       return  /^[A-Za-z\-\/]{3,20}$/.test(value)
+    }
+    //on stocke les regEx du champ email dans une fonction
+    let regExEmail = (value) => {
+        return  /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g.test(value)
+     } 
+    //on stocke les regEx du champaddresse postale dans une fonction
+    let regExaddress = (value) => {
+        return  /^[A-Za-z0-9\s]{10,50}$/.test(value)
+     }
+
+    //fonction pour valider le Nom
+    let firstNameCheck = () => {
+        const firstName = formValues.firstName
+        const firstNameValid = document.querySelector('#firstName')
+        if(regExText(firstName)) {
+            validFeedBack(firstNameValid, 'invalidFirstName')
+            return true
+        } else {
+            invalidFeedBack('invalidFirstName')
+            return false
+        }
+    }
+   firstNameCheck()
+     //fonction pour valider le Prénom
+    let lastNameCheck = () => {
+        const lastName = formValues.lastName
+        const lastNameValid = document.querySelector('#lastName')
+        if(regExText(lastName)) {
+           
+            validFeedBack(lastNameValid, 'invalidLastName')
+            return true
+        } else {
+            
+            invalidFeedBack('invalidLastName')
+           
+            return false
+        }
+    }
+   lastNameCheck()
+     //fonction pour valider la ville
+    let cityCheck = () => {
+        const city = formValues.city
+        const cityValid = document.querySelector('#city')
+        if(regExText(city)) {
+           
+            validFeedBack(cityValid, 'invalidCity')
+            return true
+        } else {
+            
+            invalidFeedBack("invalidCity")
+           
+            return false
+        }
+    }
+   cityCheck()
+    //fonction pour valider l'email
+    let emailCheck = () => {
+        const email = formValues.email
+        const emailValid = document.querySelector('#email')
+        if(regExEmail(email)) {
+            validFeedBack(emailValid, "invalidEmail")
+            return true
+        } else {
+            invalidFeedBack("invalidEmail")
+            return false
+        }
+    }
+    emailCheck()
+   
+     //fonction pour valider l'adresse postale
+     let addressCheck = () => {
+        const address = formValues.address
+        const addressValid = document.querySelector('#address')
+        if(regExaddress(address)) {
+            validFeedBack(addressValid, 'invalidAddress')
+            return true
+        } else {
+            invalidFeedBack('invalidAddress')
+            return false
+        }
+    }
+    addressCheck()
+    
+    
+})
+
+/*-------------------mettre le contenu du localstorage dans le formulaire automatiquement------------------- */
+
+let fillOutTheForm = (value) => {
+    let contact = JSON.parse(localStorage.getItem('formValues'))
+    if (contact !== null) {
+        document.querySelector(`#${value}`).value = contact[value]
+    }
+}
+    fillOutTheForm('firstName')
+    fillOutTheForm('lastName')
+    fillOutTheForm('address')
+    fillOutTheForm('city')
+    fillOutTheForm('email')
