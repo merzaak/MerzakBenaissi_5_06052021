@@ -23,7 +23,7 @@ const displayTeddies = (ted) => {
     cloneElement.querySelector('.card-title').textContent = ted.name
     cloneElement.querySelector('.card-img-top').src = ted.imageUrl
     cloneElement.querySelector('.price').textContent = `${ted.price/100},00 €`
-    cloneElement.querySelector('.url').href= `product.html?id=${ted._id}`
+    cloneElement.querySelector('.url').href= `frontend/product.html?id=${ted._id}`
 
     document.querySelector('.main').appendChild(cloneElement)
 }
