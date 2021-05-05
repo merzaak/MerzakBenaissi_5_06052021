@@ -54,3 +54,103 @@ let displayCart = () => {
     }     
 } 
 
+/**************************** actualiser les quantités **********************************/
+let actualiseQuantity = () => {
+    let btnsPlus = document.querySelectorAll(".bi-plus-circle-fill")
+    let btnsMinus = document.querySelectorAll(".bi-dash-circle-fill")
+    let currentQuantity
+    let currentProduct
+    let productNumbers = parseInt(localStorage.getItem('cartNumbers'))
+    let cartCost = parseInt(localStorage.getItem('totalCost'))
+
+    for ( let j =0; j < btnsPlus.length; j++) {
+        let btnPlus = btnsPlus[j]
+        btnPlus.addEventListener('click', () => {
+            currentQuantity = btnPlus.parentElement.querySelector('span').textContent.trim()
+            currentProduct = btnPlus.parentElement.previousElementSibling.previousElementSibling.textContent.trim()
+            localStorage.setItem('cartNumbers', productNumbers + 1)
+            localStorage.setItem('totalCost', cartCost + cartItems[currentProduct].price)
+            cartItems[currentProduct].quantity = cartItems[currentProduct].quantity  + 1
+            localStorage.setItem('productInCart', JSON.stringify(cartItems))
+            document.querySelector('.cartIcone').textContent = productNumbers +1
+            document.querySelector('.quantity span').textContent = productNumbers 
+            document.getElementById('totalProduct').innerText = productNumbers 
+            displayCart()  
+            onloadCartNumbers();
+            location.reload()
+            
+        })
+    }
+
+    for ( let j =0; j < btnsMinus.length; j++) {
+        let btnMinus = btnsMinus[j]
+        btnMinus.addEventListener('click', () => {
+            currentQuantity = btnMinus.parentElement.querySelector('span').textContent.trim()
+            currentProduct = btnMinus.parentElement.previousElementSibling.previousElementSibling.textContent.trim()
+            
+            if( cartItems[currentProduct].quantity > 1){
+                cartItems[currentProduct].quantity = cartItems[currentProduct].quantity  - 1
+                localStorage.setItem('productInCart', JSON.stringify(cartItems))
+                
+                localStorage.setItem('cartNumbers', productNumbers - 1)
+                document.querySelector('.cartIcone').textContent = productNumbers -1
+                document.querySelector('.quantity span').textContent = productNumbers -1
+                document.getElementById('totalProduct').innerText = productNumbers -1
+                localStorage.setItem('totalCost', cartCost - cartItems[currentProduct].price)
+                displayCart()  
+                onloadCartNumbers();
+                location.reload()
+            }
+        })
+    }
+}
+
+/****************************supprimer un article du panier ********************/
+let removeItem = () => {
+    let btnsDelete = document.querySelectorAll(".btn-delete")
+    let productName;
+    let productNumbers = localStorage.getItem('cartNumbers')
+    let cartCost = localStorage.getItem('totalCost')
+    for (let j=0; j < btnsDelete.length; j++){
+        let btnDelete = btnsDelete[j] 
+        btnDelete.addEventListener('click', async () => {
+            productName = btnDelete.parentElement.previousElementSibling.previousElementSibling.textContent.trim()// pour que le bouton 'suprimer' cible l'article qui est son parent 
+            localStorage.setItem('cartNumbers', productNumbers - cartItems[productName].quantity)
+            localStorage.setItem('totalCost', cartCost - (cartItems[i].price * cartItems[i].quantity))
+            delete cartItems[i]
+            localStorage.setItem('productInCart', JSON.stringify(cartItems))
+            displayCart()  
+            onloadCartNumbers();
+            location.reload()
+        })
+    }
+    if(totalCost == 0) {
+        localStorage.clear()
+        location.reload()
+    }
+}
+
+/*****************************Vider completement le panier***********************/
+let popupClearCart = () => {
+    const btnRemove = document.getElementById('clearCart')
+    btnRemove.addEventListener('click', () => {
+        if(window.confirm(`Vous êtes sûr de vouloir vider votre panier?`)) {
+            localStorage.clear()
+            window.location.href = "basket.html"
+        } else {
+            window.location.href = "basket.html"
+        }
+        
+    })
+}
+
+//cette fonction  récupère le nombre de produits stockés dans le localStorage quand on raffraichi notre page
+let onloadCartNumbers = () => {
+    productNumbers = localStorage.getItem('cartNumbers');
+    if (productNumbers) {
+        document.querySelector('.cartIcone').textContent = productNumbers
+    }
+}
+
+onloadCartNumbers();
+displayCart()
