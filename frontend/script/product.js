@@ -95,3 +95,24 @@ let totalCost = (ted) => {
     }
 
 }
+
+//cette fonction récupère le nombre de produits stockés dans le localStorage quand on raffraichi notre page
+let onloadCartNumbers = () => {
+    let productNumbers = localStorage.getItem('cartNumbers');
+    if (productNumbers) {
+        document.querySelector('.cartIcone').textContent = productNumbers
+        
+    }
+}
+onloadCartNumbers();
+
+//function de redirection pour aller à la page panier quand on ajoute un produit 
+let popupConfirmation = (ted) => {
+    if(window.confirm(`${ted.name} a bien été ajouté à votre panier.
+    Cliquer sur OK pour aller au panier 
+    ou sur ANNULER pour revenir à la page d'accueil`)) {
+      window.location.href = "basket.html"
+    } else {
+      window.location.href = "index.html"
+    }
+}
