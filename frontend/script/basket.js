@@ -263,6 +263,56 @@ btnSubmitForm.addEventListener('click', () => {
     }
     addressCheck()
     
+    // si toutes les conditions sont respectées, on envoie le formulaires, sinon on prévient l'utilisateur
+    let checkForm = () => {
+        if (firstNameCheck() && lastNameCheck() && cityCheck() && addressCheck() && emailCheck()) {
+            localStorage.setItem('formValues', JSON.stringify(formValues))
+            
+            //mettre les valeur  du formlaire et les produits du pannier dans un objet pour les envoyer au serveur
+            let products = Object.keys(cartItems) // récupérer les ID des produits dans le localStorage dans un array
+            console.log( 'products', products );
+            const contact = JSON.parse(localStorage.getItem('formValues'))
+            const toSendToServer = {
+                products,
+                contact
+            }
+            
+            let promisePost = fetch('http://localhost:3000/api/teddies/order', {
+                method : "post",
+                body: JSON.stringify(toSendToServer),
+                headers : {
+                    "Content-Type": "application/json"
+                },
+            })
+            console.log(promisePost);
+            promisePost.then(async(response) =>{
+                try{
+                    const contenu = await response.json()
+                    console.log( "contenu de fetch post", contenu);
+                    if(response.ok) {
+                        console.log(`résultat response.ok ${contenu.orderId}`);
+                        //récuperer l'id de la response et le mettre dans le storage
+                        localStorage.setItem('responseId', contenu.orderId )
+                        // redirection vers la page confirmation
+                        //window.location.href = "confirmation.html"
+                    } else {
+
+                        console.log(`résultat response serveur ${response.status}`);
+                    }
+                }
+                catch(e){
+                    console.log(e)
+                    alert(`erreur du catch ${e}`)
+                }
+            })
+        } else {
+            //btnSubmitForm.setAttribute('disabled', "")
+            console.log("formulaire pas valide")
+            document.querySelector('#invalidForm').textContent = `votre formulaire n'est pas valide`
+            //alert("votre formulaire n'est pas valide")
+        }
+    }
+    checkForm()
     
 })
 
