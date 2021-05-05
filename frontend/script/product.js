@@ -34,3 +34,64 @@ const displayTeddy = (ted) => {
     displayTeddy(teddy);
 }) ()
 
+/*********************** Ajout les produits au panier *************************/
+
+const btnAddToCart = document.querySelector('.add-to-cart')
+btnAddToCart.addEventListener('click', async () => {
+    const teddy = await getTeddy()
+    let selectedTeddy = {
+        id: teddy._id,
+        name: teddy.name,
+        price: teddy.price,
+        image: teddy.imageUrl,
+        quantity: 0
+    }
+    cartNumbers(selectedTeddy)
+    totalCost (selectedTeddy)
+    //popupConfirmation(selectedTeddy)
+})
+
+//compter et afficher le nombre de produits stockés dans le localStorage
+let cartNumbers =  (ted) => {
+    let productNumbers = parseInt(localStorage.getItem('cartNumbers'))
+    if (productNumbers) {
+        localStorage.setItem('cartNumbers', productNumbers + 1)
+        document.querySelector('.cartIcone').textContent = productNumbers + 1
+    } else {
+        localStorage.setItem('cartNumbers', 1)
+        document.querySelector('.cartIcone').textContent = 1
+    }
+    setItems(ted)
+}
+//stocker les produits cliqués dans le storage et actualiser leurs quantités
+let setItems= (ted) => {
+    let cartItems = JSON.parse(localStorage.getItem('productInCart'));
+    if( cartItems != null) {
+        if(cartItems[ted.id] == undefined) {
+            cartItems = {
+                ...cartItems,
+                [ted.id] : ted
+            }
+        }
+        cartItems[ted.id].quantity += 1; //on incrémente la quantité à chaque fois qu'on ajoute le produit au panier 
+    } else {
+        ted.quantity = 1
+        cartItems = {
+            [ted.id] : ted
+        }
+    }
+    localStorage.setItem('productInCart', JSON.stringify(cartItems))
+}
+
+//calculer le prix total et le stocker dans le localStorage
+let totalCost = (ted) => {
+    let cartCost = localStorage.getItem('totalCost')
+   
+    if(cartCost != null) {
+        cartCost = parseInt(cartCost)
+        localStorage.setItem('totalCost', cartCost + ted.price)
+    } else {
+        localStorage.setItem('totalCost', ted.price)
+    }
+
+}
