@@ -2,7 +2,7 @@
 
 const id = new URLSearchParams(window.location.search).get('id')
 const getTeddy = () => {
-    return fetch(`http://localhost:3000/api/teddies/${id}`)
+    return fetch(`${apiUrl}/api/teddies/${id}`)
     .then((response) =>  response.json())
     .then((product) => product)
     .catch(function(error) {

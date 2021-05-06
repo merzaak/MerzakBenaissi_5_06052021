@@ -1,7 +1,7 @@
 'use strict';
 
 const getTeddies = () => {
-    return fetch('http://localhost:3000/api/teddies')
+    return fetch(`${apiUrl}/api/teddies`)
     .then((response) =>  response.json())
     .then((products) => products)
     .catch(function(error) {
