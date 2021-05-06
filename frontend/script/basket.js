@@ -294,7 +294,7 @@ btnSubmitForm.addEventListener('click', () => {
                         //récuperer l'id de la response et le mettre dans le storage
                         localStorage.setItem('responseId', contenu.orderId )
                         // redirection vers la page confirmation
-                        //window.location.href = "confirmation.html"
+                        window.location.href = "confirmation.html"
                     } else {
 
                         console.log(`résultat response serveur ${response.status}`);
@@ -306,10 +306,8 @@ btnSubmitForm.addEventListener('click', () => {
                 }
             })
         } else {
-            //btnSubmitForm.setAttribute('disabled', "")
             console.log("formulaire pas valide")
             document.querySelector('#invalidForm').textContent = `votre formulaire n'est pas valide`
-            //alert("votre formulaire n'est pas valide")
         }
     }
     checkForm()
