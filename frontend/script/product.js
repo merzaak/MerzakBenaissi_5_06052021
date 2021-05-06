@@ -48,7 +48,7 @@ btnAddToCart.addEventListener('click', async () => {
     }
     cartNumbers(selectedTeddy)
     totalCost (selectedTeddy)
-    //popupConfirmation(selectedTeddy)
+    popupConfirmation(selectedTeddy)
 })
 
 //compter et afficher le nombre de produits stockés dans le localStorage

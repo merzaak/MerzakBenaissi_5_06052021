@@ -50,7 +50,7 @@ let displayCart = () => {
         cartElement.innerHTML = structurepanier
         actualiseQuantity()
         removeItem()
-        popupClearCart()
+        clearCart()
     }     
 } 
 
@@ -108,14 +108,14 @@ let actualiseQuantity = () => {
 /****************************supprimer un article du panier ********************/
 let removeItem = () => {
     let btnsDelete = document.querySelectorAll(".btn-delete")
-    let productName;
+    let productId;
     let productNumbers = localStorage.getItem('cartNumbers')
     let cartCost = localStorage.getItem('totalCost')
     for (let j=0; j < btnsDelete.length; j++){
         let btnDelete = btnsDelete[j] 
         btnDelete.addEventListener('click', async () => {
-            productName = btnDelete.parentElement.previousElementSibling.previousElementSibling.textContent.trim()// pour que le bouton 'suprimer' cible l'article qui est son parent 
-            localStorage.setItem('cartNumbers', productNumbers - cartItems[productName].quantity)
+            productId = btnDelete.parentElement.previousElementSibling.previousElementSibling.textContent.trim()// pour que le bouton 'suprimer' cible l'article qui est son parent 
+            localStorage.setItem('cartNumbers', productNumbers - cartItems[productId].quantity)
             localStorage.setItem('totalCost', cartCost - (cartItems[i].price * cartItems[i].quantity))
             delete cartItems[i]
             localStorage.setItem('productInCart', JSON.stringify(cartItems))
@@ -131,11 +131,15 @@ let removeItem = () => {
 }
 
 /*****************************Vider completement le panier***********************/
-let popupClearCart = () => {
+let clearCart = () => {
     const btnRemove = document.getElementById('clearCart')
     btnRemove.addEventListener('click', () => {
-        if(window.confirm(`Vous êtes sûr de vouloir vider votre panier?`)) {
-            localStorage.clear()
+        if(window.confirm(`Êtes-vous sûr de vouloir vider votre panier?`)) {
+            // on vide tout le localStorage sauf les données du formulaire
+            localStorage.removeItem("productInCart")
+            localStorage.removeItem("totalCost")
+            localStorage.removeItem("cartNumbers")
+            localStorage.removeItem("responseId")
             window.location.href = "basket.html"
         } else {
             window.location.href = "basket.html"
@@ -270,7 +274,6 @@ btnSubmitForm.addEventListener('click', () => {
             
             //mettre les valeur  du formlaire et les produits du pannier dans un objet pour les envoyer au serveur
             let products = Object.keys(cartItems) // récupérer les ID des produits dans le localStorage dans un array
-            console.log( 'products', products );
             const contact = JSON.parse(localStorage.getItem('formValues'))
             const toSendToServer = {
                 products,
@@ -284,29 +287,24 @@ btnSubmitForm.addEventListener('click', () => {
                     "Content-Type": "application/json"
                 },
             })
-            console.log(promisePost);
             promisePost.then(async(response) =>{
                 try{
                     const contenu = await response.json()
-                    console.log( "contenu de fetch post", contenu);
                     if(response.ok) {
-                        console.log(`résultat response.ok ${contenu.orderId}`);
                         //récuperer l'id de la response et le mettre dans le storage
                         localStorage.setItem('responseId', contenu.orderId )
                         // redirection vers la page confirmation
                         window.location.href = "confirmation.html"
                     } else {
-
-                        console.log(`résultat response serveur ${response.status}`);
+                        Alert(`résultat response serveur ${response.status}`);
                     }
                 }
                 catch(e){
-                    console.log(e)
                     alert(`erreur du catch ${e}`)
                 }
             })
         } else {
-            console.log("formulaire pas valide")
+            alert("Votre formulaire n'est pas valide, veuillez bien remplir tous les champs")
             document.querySelector('#invalidForm').textContent = `votre formulaire n'est pas valide`
         }
     }
