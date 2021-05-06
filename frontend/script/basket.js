@@ -280,7 +280,7 @@ btnSubmitForm.addEventListener('click', () => {
                 contact
             }
             
-            let promisePost = fetch('http://localhost:3000/api/teddies/order', {
+            let promisePost = fetch(`/${apiUrl}/api/teddies/order`, {
                 method : "post",
                 body: JSON.stringify(toSendToServer),
                 headers : {
