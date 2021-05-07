@@ -183,7 +183,7 @@ btnSubmitForm.addEventListener('click', () => {
     }
     // on stocke les regEx des champs Nom, Prénom et ville dans une fonction
     let regExText = (value) => {
-       return  /^[A-Za-z\-\/]{3,20}$/.test(value)
+       return  /^[A-Za-zéèàê\-\/]{3,20}$/.test(value)
     }
     //on stocke les regEx du champ email dans une fonction
     let regExEmail = (value) => {
@@ -191,7 +191,7 @@ btnSubmitForm.addEventListener('click', () => {
      } 
     //on stocke les regEx du champaddresse postale dans une fonction
     let regExaddress = (value) => {
-        return  /^[A-Za-z0-9\s]{10,50}$/.test(value)
+        return  /^[A-Za-zéèàê0-9\s]{10,50}$/.test(value)
      }
 
     //fonction pour valider le Nom
