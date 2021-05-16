@@ -4,11 +4,11 @@
 let cartItems = JSON.parse(localStorage.getItem('productInCart'))
 let productNumbers = parseInt(localStorage.getItem('cartNumbers'))
 let totalCost = parseInt(localStorage.getItem('totalCost'))
-let i = 0
+
 
 
 /**********************AFFICHER LA PAGE DU panier***************************************/
-let displayCart = () => {
+const displayCart = () => {
     // si le panier est vide afficher "Votre panier est vide" et cacher le formulaire et le total
     const cartElement = document.querySelector('#cartElement')
     if( cartItems === null) {
@@ -18,10 +18,10 @@ let displayCart = () => {
     } 
     // sinon afficher les articles du panier, la partie total et le formulaire
     else {
-        let structurepanier =  []
+        let displayCartItems =  []
         for ( let teddy in cartItems ) {
-            let subTotal = cartItems[teddy].quantity*cartItems[teddy].price/100
-            structurepanier = structurepanier +` 
+            let subTotal = cartItems[teddy].quantity*cartItems[teddy].price
+            displayCartItems += ` 
                 <div class="card productCard mb-3 p-0">
                     <div class="row">
                         <div class="col-4 image">
@@ -34,20 +34,20 @@ let displayCart = () => {
                                 <p class="price m-0">Prix unitaire : <span class="font-weight-bold">${cartItems[teddy].price/100},00</span>€</p>
                                 <p class="quantity m-0">Quantité : <i class="bi bi-dash-circle-fill text-primary  btn pl-2"></i> <span class="card-text productQty h5 px-2">${cartItems[teddy].quantity}</span> <i class="bi bi-plus-circle-fill text-primary btn"></i>  <button class="btn btn-danger btn-sm  btn-delete ml-2"><i class="bi bi-trash-fill"></i></button></p>
                                 <div class="qty mt-5 text-right m-0">
-                                    <p class="m-0">Sous-Total : <span class="card-text subTotal text-right font-weight-bold h6">${subTotal},00</span> €</p>
+                                    <p class="m-0">Sous-Total : <span class="card-text subTotal text-right font-weight-bold h6">${subTotal/100},00</span> €</p>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            `;   
+            ` 
         }
+        cartElement.innerHTML = displayCartItems
         //afficher le formulaire et la partie total quand le panier n'est pas vide
         document.querySelector('.total').hidden = false;
         document.querySelector('.form').hidden = false;
         document.getElementById('totalProduct').innerText = productNumbers
         document.querySelector('.totalAPayer').innerText = `${totalCost/100},00`
-        cartElement.innerHTML = structurepanier
         updateQuantity()
         removeItem()
         clearCart()
@@ -55,12 +55,12 @@ let displayCart = () => {
 } 
 
 /**************************** actualiser les quantités des produits déjà dans le panier **********************************/
-let updateQuantity = () => {
-    //cible rles boutons  plus et moins
+const updateQuantity = () => {
+    //cibler les boutons  plus et moins
     let btnsPlus = document.querySelectorAll(".bi-plus-circle-fill")
     let btnsMinus = document.querySelectorAll(".bi-dash-circle-fill")
     let currentQuantity
-    let currentProduct
+    let currentProductId
     let productNumbers = parseInt(localStorage.getItem('cartNumbers'))
     let cartCost = parseInt(localStorage.getItem('totalCost'))
 
@@ -70,15 +70,15 @@ let updateQuantity = () => {
         btnPlus.addEventListener('click', () => {
             // on récupére la quantité qui corresponde à l'élement parent du bouton "plus"
             currentQuantity = btnPlus.parentElement.querySelector('span').textContent.trim()
-            // on récupère le produit qui correspond au bouton "plus"
-            currentProduct = btnPlus.parentElement.previousElementSibling.previousElementSibling.textContent.trim()
-            // on actualise le nombre de produits et le total dans le localStirage
+            // on récupère le ID du produit qui correspond au bouton "plus"
+            currentProductId = btnPlus.parentElement.previousElementSibling.previousElementSibling.textContent.trim()
+            // on actualise le nombre de produits et le total dans le localStorage
             localStorage.setItem('cartNumbers', productNumbers + 1)
-            localStorage.setItem('totalCost', cartCost + cartItems[currentProduct].price)
+            localStorage.setItem('totalCost', cartCost + cartItems[currentProductId].price)
             //on actualise la quantité du produit concerné dans le localStorage
-            cartItems[currentProduct].quantity = cartItems[currentProduct].quantity  + 1
+            cartItems[currentProductId].quantity = cartItems[currentProductId].quantity  + 1
             localStorage.setItem('productInCart', JSON.stringify(cartItems))
-            //on actualise les information dans le DOM
+            //on actualise les informations dans le DOM
             document.querySelector('.cartIcone').textContent = productNumbers + 1
             document.querySelector('.quantity span').textContent = productNumbers + 1
             document.getElementById('totalProduct').textContent = productNumbers + 1
@@ -93,17 +93,16 @@ let updateQuantity = () => {
         let btnMinus = btnsMinus[j]
         btnMinus.addEventListener('click', () => {
             currentQuantity = btnMinus.parentElement.querySelector('span').textContent.trim()
-            currentProduct = btnMinus.parentElement.previousElementSibling.previousElementSibling.textContent.trim()
+            currentProductId = btnMinus.parentElement.previousElementSibling.previousElementSibling.textContent.trim()
             //si la quantité du produit et de 1 alors on pourra pas diminuer la quantité
-            if( cartItems[currentProduct].quantity > 1){
-                cartItems[currentProduct].quantity = cartItems[currentProduct].quantity  - 1
+            if( cartItems[currentProductId].quantity > 1){
+                cartItems[currentProductId].quantity = cartItems[currentProductId].quantity  - 1
                 localStorage.setItem('productInCart', JSON.stringify(cartItems))
                 localStorage.setItem('cartNumbers', productNumbers - 1)
-                localStorage.setItem('totalCost', cartCost - cartItems[currentProduct].price)
+                localStorage.setItem('totalCost', cartCost - cartItems[currentProductId].price)
                 document.querySelector('.cartIcone').textContent = productNumbers -1
                 document.querySelector('.quantity span').textContent = productNumbers -1
                 document.getElementById('totalProduct').innerText = productNumbers -1
-                
                 displayCart()  
                 onloadCartNumbers()
                 location.reload()
@@ -113,19 +112,21 @@ let updateQuantity = () => {
 }
 
 /****************************supprimer un article du panier ********************/
-let removeItem = () => {
+const removeItem = () => {
     let btnsDelete = document.querySelectorAll(".btn-delete")
-    let productId
+    let currentProductId
     let productNumbers = localStorage.getItem('cartNumbers')
     let cartCost = localStorage.getItem('totalCost')
     for (let j=0; j < btnsDelete.length; j++){
         let btnDelete = btnsDelete[j] 
         btnDelete.addEventListener('click', async () => {
-            // pour que le bouton 'suprimer' cible l'article qui est son parent 
-            productId = btnDelete.parentElement.previousElementSibling.previousElementSibling.textContent.trim()
-            localStorage.setItem('cartNumbers', productNumbers - cartItems[productId].quantity)
-            localStorage.setItem('totalCost', cartCost - (cartItems[productId].price * cartItems[productId].quantity))
-            delete cartItems[productId]
+            // pour que le bouton 'suprimer' cible l'ID de l'article qui est son parent 
+            currentProductId = btnDelete.parentElement.previousElementSibling.previousElementSibling.textContent.trim()
+            //on actualise le nombre de produit et le total dans le localStorage
+            localStorage.setItem('cartNumbers', productNumbers - cartItems[currentProductId].quantity)
+            localStorage.setItem('totalCost', cartCost - (cartItems[currentProductId].price * cartItems[currentProductId].quantity))
+            //on supprime le produit concerné du loclaStorage
+            delete cartItems[currentProductId]
             localStorage.setItem('productInCart', JSON.stringify(cartItems))
             displayCart()  
             onloadCartNumbers()
@@ -142,7 +143,7 @@ let removeItem = () => {
 }
 
 /*****************************Vider completement le panier***********************/
-let clearCart = () => {
+const clearCart = () => {
     const btnRemove = document.getElementById('clearCart')
     btnRemove.addEventListener('click', () => {
         if(window.confirm(`Êtes-vous sûr de vouloir vider votre panier?`)) {
@@ -173,29 +174,29 @@ btnSubmitForm.addEventListener('click', () => {
     }
     //****************** gestion et validation du formulaire******************************
     //fonction pour apparaitre un message en cas d'une value invalid
-   let invalidFeedBack = (errorId) =>{
+   const invalidFeedBack = (errorId) =>{
         document.getElementById(`${errorId}`).textContent = `Veuillez bien remplir ce champ SVP` 
     }
     //fonction pour changer les borders quand la value de l'input est valid
-    let validFeedBack = (border, errorId) => {
+    const validFeedBack = (border, errorId) => {
         border.classList.add('border-success')
         document.getElementById(`${errorId}`).textContent = ""
     }
     // on stocke les regEx des champs Nom, Prénom et ville dans une fonction
-    let regExText = (value) => {
+    const regExText = (value) => {
        return  /^[A-Za-zéèàê\-\/]{3,20}$/.test(value)
     }
     //on stocke les regEx du champ email dans une fonction
-    let regExEmail = (value) => {
+    const regExEmail = (value) => {
         return  /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g.test(value)
      } 
     //on stocke les regEx du champaddresse postale dans une fonction
-    let regExaddress = (value) => {
+    const regExaddress = (value) => {
         return  /^[A-Za-zéèàê0-9\s]{10,50}$/.test(value)
      }
 
     //fonction pour valider le Nom
-    let firstNameCheck = () => {
+    const firstNameCheck = () => {
         const firstName = formValues.firstName
         const firstNameValid = document.querySelector('#firstName')
         if(regExText(firstName)) {
@@ -208,7 +209,7 @@ btnSubmitForm.addEventListener('click', () => {
     }
    firstNameCheck()
      //fonction pour valider le Prénom
-    let lastNameCheck = () => {
+    const lastNameCheck = () => {
         const lastName = formValues.lastName
         const lastNameValid = document.querySelector('#lastName')
         if(regExText(lastName)) {
@@ -221,7 +222,7 @@ btnSubmitForm.addEventListener('click', () => {
     }
    lastNameCheck()
      //fonction pour valider la ville
-    let cityCheck = () => {
+    const cityCheck = () => {
         const city = formValues.city
         const cityValid = document.querySelector('#city')
         if(regExText(city)) {
@@ -234,7 +235,7 @@ btnSubmitForm.addEventListener('click', () => {
     }
    cityCheck()
     //fonction pour valider l'adresse postale
-    let addressCheck = () => {
+    const addressCheck = () => {
         const address = formValues.address
         const addressValid = document.querySelector('#address')
         if(regExaddress(address)) {
@@ -247,7 +248,7 @@ btnSubmitForm.addEventListener('click', () => {
     }
     addressCheck()
     //fonction pour valider l'email
-    let emailCheck = () => {
+    const emailCheck = () => {
         const email = formValues.email
         const emailValid = document.querySelector('#email')
         if(regExEmail(email)) {
@@ -260,15 +261,15 @@ btnSubmitForm.addEventListener('click', () => {
     }
     emailCheck()
    
-    let checkForm = () => {
+    const checkForm = () => {
         // si toutes les conditions sont respectées, on envoie le formulaires, sinon on prévient l'utilisateur
         if (firstNameCheck() && lastNameCheck() && cityCheck() && addressCheck() && emailCheck()) {
             //on stocke les valeurs du formualire dans le localStorage
             localStorage.setItem('formValues', JSON.stringify(formValues))
              // récupérer les ID des produits dans le localStorage dans un array
-             let products = Object.keys(cartItems)
+            let products = Object.keys(cartItems)
              //on récupère les valeurs du formulaire stockées dans le localStorage
-             const contact = JSON.parse(localStorage.getItem('formValues'))
+            const contact = JSON.parse(localStorage.getItem('formValues'))
              //mettre les valeurs  du formlaire et les produits du pannier dans un objet pour les envoyer au serveur
             const toSendToServer = {
                 products,
@@ -308,7 +309,7 @@ btnSubmitForm.addEventListener('click', () => {
 
 /*-------------------mettre le contenu du localstorage dans le formulaire automatiquement------------------- */
 
-let fillOutTheForm = (value) => {
+const fillOutTheForm = (value) => {
     let contact = JSON.parse(localStorage.getItem('formValues'))
     if (contact !== null) {
         document.querySelector(`#${value}`).value = contact[value]

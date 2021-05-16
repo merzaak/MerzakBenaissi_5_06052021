@@ -4,11 +4,11 @@
 const id = new URLSearchParams(window.location.search).get('id')
 const getTeddy = async () => {
     try {
-        const response = await fetch(`${apiUrl}/api/teddies/${id}`);
-        const product = await response.json();
-        return product;
+        const response = await fetch(`${apiUrl}/api/teddies/${id}`)
+        const product = await response.json()
+        return product
     } catch (error) {
-        alert(error);
+        alert(error)
     }
 }
 
@@ -35,7 +35,7 @@ const displayTeddy = (ted) => {
 // fonction anonyme, auto-invoquée qui affiche le produit  concerné dans la pages d'accueil
 (async  () => {
     const teddy = await getTeddy()
-    displayTeddy(teddy);
+    displayTeddy(teddy)
 }) ()
 
 /*********************** Ajout des produits au panier *************************/
@@ -59,7 +59,7 @@ btnAddToCart.addEventListener('click', async () => {
 })
 
 //stocké le nombre de produits ajoutés dans le localStorage et l'afficher 
-let cartNumbers =  (ted) => {
+const cartNumbers =  (ted) => {
     let productNumbers = parseInt(localStorage.getItem('cartNumbers')) 
     //si des produits exsiste déjà dans le localStorage, alors on incrémente la valeur de la clé "cartNumbers" par 1
     if (productNumbers) {
@@ -74,11 +74,11 @@ let cartNumbers =  (ted) => {
 }
 
 //stocker les produits cliqués dans le storage et actualiser leurs quantités
-let setItems= (ted) => {
-    let cartItems = JSON.parse(localStorage.getItem('productInCart'));
+const setItems= (ted) => {
+    let cartItems = JSON.parse(localStorage.getItem('productInCart'))
     //si il y a des produits dans le localStorage ==>
     if( cartItems != null) {
-        //== et si le produits qu'on a ajouté n'est pas le même que celui stocké dans le localStorage
+        //==> et si le produits qu'on a ajouté n'est pas le même que celui stocké dans le localStorage
         //alors on ajoute le produit au localStorage et à l'objet cartItems
         if(cartItems[ted.id] == undefined) {
             cartItems = {
@@ -86,10 +86,10 @@ let setItems= (ted) => {
                 [ted.id] : ted
             }
         } else {
-            //sinon : et on incrémente la quantité du produit existant dans le localStorage
-            cartItems[ted.id].quantity += 1; 
+            //sinon : on incrémente la quantité du produit existant dans le localStorage
+            cartItems[ted.id].quantity += 1
         }
-    //et si le produit ajouté n'exsiste pas dans le localStorage, alors on l'ajoute 
+    //et si le produit ajouté n'exsiste pas et le localStorage est vide, alors on crée l'objet cartItems et on lui ajoute le produit
     } else {
         cartItems = {
             [ted.id] : ted
@@ -99,7 +99,7 @@ let setItems= (ted) => {
 }
 
 //calculer le prix total et le stocker dans le localStorage
-let totalCost = (ted) => {
+const totalCost = (ted) => {
     let cartCost = localStorage.getItem('totalCost')
     //s'il y a des produits dans le localStorage, 
     //alors on additionne le prix du produit ajouté à la valeur
@@ -114,7 +114,7 @@ let totalCost = (ted) => {
 }
 
 //function de redirection pour aller à la page panier quand on ajoute un produit 
-let popupConfirmation = (ted) => {
+const popupConfirmation = (ted) => {
     if(window.confirm(`${ted.name} a bien été ajouté à votre panier.
     Cliquer sur OK pour aller au panier 
     ou sur ANNULER pour revenir à la page d'accueil`)) {

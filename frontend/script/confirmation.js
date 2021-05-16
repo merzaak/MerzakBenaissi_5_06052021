@@ -9,7 +9,7 @@ const totalCost = parseInt(localStorage.getItem('totalCost'))
 document.querySelector('.totalCost').textContent = `${totalCost/100}`
 
  // vider le localStorage sauf les données du formulaire
-let removeItemLocalStorage = (key) => {
+const removeItemLocalStorage = (key) => {
     localStorage.removeItem(key)
 }
 removeItemLocalStorage("productInCart")
