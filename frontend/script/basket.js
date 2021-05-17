@@ -161,7 +161,6 @@ const clearCart = () => {
 displayCart()
 
 /*/////////////////////////// FORMULAIRE/////////////////////////////////////////////////*/
-//AddEvenListner
 const btnSubmitForm = document.querySelector('#btnSubmit') //selection du buton submit du formulaire
 btnSubmitForm.addEventListener('click', () => {
     //récupération des valeurs du formulaire dans un objet pour les mettre dans le localStorage
