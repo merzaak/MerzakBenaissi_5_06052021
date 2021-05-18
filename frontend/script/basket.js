@@ -270,34 +270,12 @@ btnSubmitForm.addEventListener('click', () => {
              //on récupère les valeurs du formulaire stockées dans le localStorage
             const contact = JSON.parse(localStorage.getItem('formValues'))
              //mettre les valeurs  du formlaire et les produits du pannier dans un objet pour les envoyer au serveur
-            const toSendToServer = {
+            const objectToSend = {
                 products,
                 contact
             }
-            // on envoie l'objet "toSendToServer" au serveur avec la methode POST
-            let promisePost = fetch(`${apiUrl}/api/teddies/order`, {
-                method : "post",
-                body: JSON.stringify(toSendToServer),
-                headers : {
-                    "Content-Type": "application/json"
-                }
-            })
-            promisePost.then(async (response) =>{
-                try{
-                    const content = await response.json()
-                    if(response.ok) {
-                        //récuperer l'id de la response et le mettre dans le storage
-                        localStorage.setItem('responseId', content.orderId )
-                        // redirection vers la page confirmation
-                        window.location.href = "confirmation.html"
-                    } else {
-                        Alert(`résultat response serveur ${response.status}`)
-                    }
-                }
-                catch(err){
-                    alert(`erreur du catch :  ${err}`)
-                }
-            })
+            // on envoie l'objet "objectToSend" au serveur avec la fonction sendToServer()
+            sendToServer(objectToSend)
         } else {
             alert("Votre formulaire n'est pas valide, veuillez bien remplir tous les champs")
             document.querySelector('#invalidForm').textContent = `votre formulaire n'est pas valide`
@@ -305,6 +283,29 @@ btnSubmitForm.addEventListener('click', () => {
     }
     checkForm()
 })
+
+/* fonction pour envoyer les données au serveur */
+const sendToServer = (toSend) => {
+    let promisePost = fetch(`${apiUrl}/api/teddies/order`, {
+        method : "post",
+        body: JSON.stringify(toSend),
+        headers : {
+            "Content-Type": "application/json"
+        }
+    })
+    promisePost.then(async (response) => {
+        try{
+            const content = await response.json()
+            //récuperer l'id de la response et le mettre dans le storage
+            localStorage.setItem('responseId', content.orderId)
+            // redirection vers la page confirmation
+            window.location.href = "confirmation.html"
+           
+        } catch(err) {
+           alert(`une erreur est survenue : ${err}`)
+        }
+    })
+}
 
 /*-------------------mettre le contenu du localstorage dans le formulaire automatiquement------------------- */
 
